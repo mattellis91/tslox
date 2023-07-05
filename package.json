@@ -1,0 +1,19 @@
+{
+  "name": "tslox",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/mattellis91/tslox.git",
+  "author": "mattellis91 <mathew.ellis2@griffithuni.edu.au>",
+  "license": "MIT",
+  "devDependencies": {
+    "@tsconfig/node16": "^16.1.0",
+    "@types/node": "^20.3.3",
+    "nodemon": "^2.0.22",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.1.6"
+  },
+  "scripts": {
+    "dev": "ts-node-dev --respawn src/index.ts",
+    "build": "tsc"
+  }
+}
