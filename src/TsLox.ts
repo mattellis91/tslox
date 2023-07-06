@@ -22,7 +22,7 @@ export class TsLox {
         try {
             const f = readFileSync(path, 'utf-8');
             //console.log(f.toString());
-            console.log(new Scanner(f.toString()).scanTokens().map((t) => t.toString()));
+            console.log(new Scanner(f.toString()).scanTokens());
         } catch (e) {
             console.log(e);
         }
