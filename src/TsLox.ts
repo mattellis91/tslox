@@ -1,5 +1,6 @@
 import { readFileSync } from "fs";
 import readline from "readline";
+import { Scanner } from "./Scanner";
 
 export class TsLox {
 
@@ -20,7 +21,8 @@ export class TsLox {
         console.log(path);
         try {
             const f = readFileSync(path, 'utf-8');
-            console.log(f.toString());
+            //console.log(f.toString());
+            console.log(new Scanner(f.toString()).scanTokens().map((t) => t.toString()));
         } catch (e) {
             console.log(e);
         }

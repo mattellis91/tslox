@@ -1,1 +1,6 @@
 test text from file
+// this is a comment
+(( )){} // grouping stuff
+!*+-/=<> <= == // operators
+asd22
+__ asd 1.2
