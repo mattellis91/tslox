@@ -13,7 +13,8 @@
     "typescript": "^5.1.6"
   },
   "scripts": {
-    "dev": "ts-node-dev --respawn src/index.ts",
+    "dev-script": "ts-node-dev --respawn src/index.ts src/test.lox",
+    "dev-repl": "ts-node-dev --respawn src/index.ts",
     "build": "tsc"
   }
 }
