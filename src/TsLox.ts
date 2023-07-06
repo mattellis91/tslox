@@ -2,6 +2,9 @@ import { readFileSync } from "fs";
 import readline from "readline";
 
 export class TsLox {
+
+    static hadError:boolean = false;
+
     main(args:string[]) {
         console.log(args);
         if(args.length > 3) {
@@ -46,5 +49,14 @@ export class TsLox {
         })
 
         waitForUserInput();
+    }
+
+    static error(line:number, message:string) {
+        TsLox.report(line, "", message);
+    }
+
+    static report(line:number, where:string, message:string) {
+        console.log(`[line ${line} ] Error ${where} : ${message}`);
+        this.hadError = true;
     }
 }
