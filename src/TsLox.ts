@@ -1,6 +1,14 @@
 import { readFileSync } from "fs";
 import readline from "readline";
 import { Scanner } from "./Scanner";
+import { BinaryExpression } from "./lexing/BinaryExpression";
+import { UnaryExpression } from "./lexing/UnaryExpression";
+import { Token } from "./Token";
+import { TokenType } from "./TokenType";
+import { LiteralExpression } from "./lexing/LiteralExpression";
+import { Expression } from "./lexing/Expression";
+import { GroupingExpression } from "./lexing/GroupingExpression";
+import { AstPrinter } from "./lexing/AstPrinter";
 
 export class TsLox {
 
@@ -23,6 +31,20 @@ export class TsLox {
             const f = readFileSync(path, 'utf-8');
             //console.log(f.toString());
             console.log(new Scanner(f.toString()).scanTokens());
+
+            const exp = new BinaryExpression(
+                new UnaryExpression(
+                    new Token(TokenType.MINUS, '-', null, 1),
+                    new LiteralExpression(123)
+                ),
+                new Token(TokenType.STAR, "*", null, 1),
+                new GroupingExpression(
+                    new LiteralExpression(25.67)
+                )
+            );
+
+            console.log(new AstPrinter().print(exp));
+
         } catch (e) {
             console.log(e);
         }
