@@ -18,11 +18,8 @@ export class Parser {
 
     parse() : Expression | null {
         try {
-            const c = this.expression();
-            console.log(c);
-            return c;
+            return this.expression();
         } catch (e) {
-            console.log(e)
             return null;
         }
     }

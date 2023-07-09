@@ -10,10 +10,13 @@ import { GroupingExpression } from "./parsing/GroupingExpression";
 import { AstPrinter } from "./parsing/AstPrinter";
 import { Parser } from "./parsing/Parser";
 import { exit } from "process";
+import { RuntimeError } from "./evaluating/RuntimeError";
+import { Interpreter } from "./evaluating/Interperter";
 
 export class TsLox {
 
     static hadError:boolean = false;
+    static hadRuntimeError:boolean = false;
 
     main(args:string[]) {
         console.log(args);
@@ -21,6 +24,7 @@ export class TsLox {
             console.log("Usage: tslox [script]");
         } else if(args.length === 3) {
             this.runFile(args[2]);
+            console.log("end of file");
         } else {
             this.runRepl();
         }
@@ -33,12 +37,14 @@ export class TsLox {
             
             const tokens = new Scanner(f.toString()).scanTokens();
             const parsed = new Parser(tokens).parse();
-
+            console.log(parsed);
             if(TsLox.hadError) {
                 return;
             }
 
-            console.log(parsed ? new AstPrinter().print(parsed) : 'failed to parse');
+            if(parsed) {
+                new Interpreter().interpret(parsed)
+            }
 
         } catch (e) {
             console.log(e);
@@ -85,5 +91,10 @@ export class TsLox {
     static report(line:number, where:string, message:string) {
         console.log(`[line ${line} ] Error ${where} : ${message}`);
         this.hadError = true;
+    }
+
+    static runtimeError(e: RuntimeError) {
+        console.log(`${e.message} \n [line ${e.token.line} ]`);
+        TsLox.hadRuntimeError = true;
     }
 }
