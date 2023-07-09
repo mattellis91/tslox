@@ -1,14 +1,15 @@
 import { readFileSync } from "fs";
 import readline from "readline";
-import { Scanner } from "./Scanner";
-import { BinaryExpression } from "./lexing/BinaryExpression";
-import { UnaryExpression } from "./lexing/UnaryExpression";
-import { Token } from "./Token";
-import { TokenType } from "./TokenType";
-import { LiteralExpression } from "./lexing/LiteralExpression";
-import { Expression } from "./lexing/Expression";
-import { GroupingExpression } from "./lexing/GroupingExpression";
-import { AstPrinter } from "./lexing/AstPrinter";
+import { Scanner } from "./lexing/Scanner";
+import { BinaryExpression } from "./parsing/BinaryExpression";
+import { UnaryExpression } from "./parsing/UnaryExpression";
+import { Token } from "./lexing/Token";
+import { TokenType } from "./lexing/TokenType";
+import { LiteralExpression } from "./parsing/LiteralExpression";
+import { GroupingExpression } from "./parsing/GroupingExpression";
+import { AstPrinter } from "./parsing/AstPrinter";
+import { Parser } from "./parsing/Parser";
+import { exit } from "process";
 
 export class TsLox {
 
@@ -29,21 +30,15 @@ export class TsLox {
         console.log(path);
         try {
             const f = readFileSync(path, 'utf-8');
-            //console.log(f.toString());
-            console.log(new Scanner(f.toString()).scanTokens());
+            
+            const tokens = new Scanner(f.toString()).scanTokens();
+            const parsed = new Parser(tokens).parse();
 
-            const exp = new BinaryExpression(
-                new UnaryExpression(
-                    new Token(TokenType.MINUS, '-', null, 1),
-                    new LiteralExpression(123)
-                ),
-                new Token(TokenType.STAR, "*", null, 1),
-                new GroupingExpression(
-                    new LiteralExpression(25.67)
-                )
-            );
+            if(TsLox.hadError) {
+                return;
+            }
 
-            console.log(new AstPrinter().print(exp));
+            console.log(parsed ? new AstPrinter().print(parsed) : 'failed to parse');
 
         } catch (e) {
             console.log(e);
@@ -77,6 +72,14 @@ export class TsLox {
 
     static error(line:number, message:string) {
         TsLox.report(line, "", message);
+    }
+
+    static errorToken(token:Token, message:string) {
+        if(token.type === TokenType.EOF) {
+            TsLox.report(token.line, " at end", message);
+        } else {
+            TsLox.report(token.line, " at '" + token.lexeme + "'", message);
+        }
     }
 
     static report(line:number, where:string, message:string) {

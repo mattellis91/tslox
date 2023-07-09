@@ -1,4 +1,4 @@
-import { Token } from "../Token";
+import { Token } from "../lexing/Token";
 import { Expression, Visitor } from "./Expression";
 
 export class LiteralExpression extends Expression {

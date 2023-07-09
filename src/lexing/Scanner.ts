@@ -1,6 +1,6 @@
 import { Token } from "./Token";
 import { TokenType } from "./TokenType";
-import { TsLox } from "./TsLox";
+import { TsLox } from "../TsLox";
 
 export class Scanner {
     private readonly source:string;
