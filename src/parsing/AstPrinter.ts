@@ -1,10 +1,10 @@
 import { BinaryExpression } from "./BinaryExpression";
-import { Expression, Visitor } from "./Expression";
+import { Expression, ExpressionVisitor } from "./Expression";
 import { GroupingExpression } from "./GroupingExpression";
 import { LiteralExpression } from "./LiteralExpression";
 import { UnaryExpression } from "./UnaryExpression";
 
-export class AstPrinter implements Visitor {
+export class AstPrinter implements ExpressionVisitor {
  
     print(expression: Expression) : string {
         return expression.accept(this)

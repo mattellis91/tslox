@@ -1,5 +1,5 @@
 import { Token } from "../lexing/Token";
-import { Expression, Visitor } from "./Expression";
+import { Expression, ExpressionVisitor } from "./Expression";
 
 export class BinaryExpression extends Expression {
     readonly left: Expression;
@@ -17,7 +17,7 @@ export class BinaryExpression extends Expression {
         return `Binary Expression: ${this.left} ${this.operator} ${this.right}`;
     }
 
-    accept(v: Visitor) {
+    accept(v: ExpressionVisitor) {
         return v.visitForBinaryExpression(this);
     }
 }

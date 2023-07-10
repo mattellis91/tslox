@@ -5,10 +5,10 @@ import { UnaryExpression } from "./UnaryExpression"
 
 export abstract class Expression { 
     abstract toString() : string; 
-    abstract accept(v: Visitor) : any;
+    abstract accept(v: ExpressionVisitor) : any;
 }
 
-export interface Visitor {
+export interface ExpressionVisitor {
     visitForBinaryExpression(be: BinaryExpression) : any
     visitForGroupingExpression(ge: GroupingExpression) : any
     visitForLiteralExpression(le: LiteralExpression) : any

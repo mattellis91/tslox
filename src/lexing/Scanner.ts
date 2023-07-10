@@ -14,6 +14,7 @@ export class Scanner {
         'class': TokenType.CLASS,
         'else': TokenType.ELSE,
         'false': TokenType.FALSE,
+        'true': TokenType.TRUE,
         'for': TokenType.FOR,
         'fun': TokenType.FUN,
         'if': TokenType.IF,

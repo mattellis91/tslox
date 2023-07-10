@@ -2,18 +2,22 @@ import { TsLox } from "../TsLox";
 import { Token } from "../lexing/Token";
 import { TokenType } from "../lexing/TokenType";
 import { BinaryExpression } from "../parsing/BinaryExpression";
-import { Expression, Visitor } from "../parsing/Expression";
+import { Expression, ExpressionVisitor } from "../parsing/Expression";
+import { ExpressionStatement } from "../parsing/ExpressionStatement";
 import { GroupingExpression } from "../parsing/GroupingExpression";
 import { LiteralExpression } from "../parsing/LiteralExpression";
+import { PrintStatement } from "../parsing/PrintStatement";
+import { Statement, StatementVisitor } from "../parsing/Statement";
 import { UnaryExpression } from "../parsing/UnaryExpression";
 import { RuntimeError } from "./RuntimeError";
 
-export class Interpreter implements Visitor {
+export class Interpreter implements ExpressionVisitor, StatementVisitor {
 
-    interpret(expression: Expression) {
+    interpret(statements: Statement[]) {
         try {
-            const value = this.evaluate(expression);
-            console.log(this.stringify(value));
+            for(const statement of statements) {
+            const value = this.execute(statement);
+            }
         } catch (e) {
             TsLox.runtimeError(e);
         }
@@ -81,12 +85,16 @@ export class Interpreter implements Visitor {
                 }
                 break; 
             case TokenType.GREATER:
+                this.checkNumberOperands(be.operator, left, right);
                 return Number(left) > Number(right);
             case TokenType.GREATER_EQUAL:
+                this.checkNumberOperands(be.operator, left, right);
                 return Number(left) >= Number(right);
             case TokenType.LESS:
+                this.checkNumberOperands(be.operator, left, right);
                 return Number(left) < Number(right);
             case TokenType.LESS_EQUAL:
+                this.checkNumberOperands(be.operator, left, right);
                 return Number(left) <= Number(right);
             case TokenType.BANG_EQUAL:
                 return !this.isEqual(left, right);
@@ -98,8 +106,21 @@ export class Interpreter implements Visitor {
         return null;
     }
 
+    visitForExpressionStatement(es: ExpressionStatement) {
+        this.evaluate(es.expression);
+    }
+
+    visitForPrintStatement(ps: PrintStatement) {
+        const value = this.evaluate(ps.expression);
+        console.log(this.stringify(value));
+    }
+
     private evaluate(expression: Expression) : any{
         return expression.accept(this);
+    }
+
+    private execute(statement: Statement) {
+        statement.accept(this);
     }
 
     private isTruthy(val: any) : boolean {

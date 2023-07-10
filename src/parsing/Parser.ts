@@ -7,6 +7,9 @@ import { GroupingExpression } from "./GroupingExpression";
 import { LiteralExpression } from "./LiteralExpression";
 import { UnaryExpression } from "./UnaryExpression";
 import { TsLox } from "../TsLox";
+import { Statement } from "./Statement";
+import { PrintStatement } from "./PrintStatement";
+import { ExpressionStatement } from "./ExpressionStatement";
 
 export class Parser {
     private readonly tokens:Token[];
@@ -16,12 +19,36 @@ export class Parser {
         this.tokens = tokens;
     }
 
-    parse() : Expression | null {
+    parse() : Statement[] {
+        const statements:Statement[] = [];
         try {
-            return this.expression();
+            while(!this.isAtEnd()) {
+                statements.push(this.statement());
+            }
+            return statements;
         } catch (e) {
-            return null;
+            return [];
         }
+    }
+
+    private statement() : Statement {
+        if(this.match([TokenType.PRINT])) {
+            return this.printStatement();
+        }
+
+        return this.expressionStatement();
+    }
+
+    private expressionStatement() : Statement {
+        const expression = this.expression();
+        this.consume(TokenType.SEMICOLON, "Expect ';' after value");
+        return new ExpressionStatement(expression);
+    }
+
+    private printStatement() : Statement {
+        const value = this.expression();
+        this.consume(TokenType.SEMICOLON, "Expect ';' after value.");
+        return new PrintStatement(value);
     }
 
     private expression() : Expression {

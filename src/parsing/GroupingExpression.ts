@@ -1,5 +1,5 @@
 import { Token } from "../lexing/Token";
-import { Expression, Visitor } from "./Expression";
+import { Expression, ExpressionVisitor } from "./Expression";
 
 export class GroupingExpression extends Expression {
     readonly expression: Expression;
@@ -12,7 +12,7 @@ export class GroupingExpression extends Expression {
     toString(): string {
         return `Grouping Expression: ${this.expression}`;
     }
-    accept(v: Visitor) {
+    accept(v: ExpressionVisitor) {
         return v.visitForGroupingExpression(this);
     }
 }

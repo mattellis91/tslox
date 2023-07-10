@@ -1,5 +1,5 @@
 import { Token } from "../lexing/Token";
-import { Expression, Visitor } from "./Expression";
+import { Expression, ExpressionVisitor } from "./Expression";
 
 export class LiteralExpression extends Expression {
     readonly value: any;
@@ -13,7 +13,7 @@ export class LiteralExpression extends Expression {
         return `Literal Expression: ${this.value}`;
     }
     
-    accept(v: Visitor) {
+    accept(v: ExpressionVisitor) {
         return v.visitForLiteralExpression(this);
     }
 }

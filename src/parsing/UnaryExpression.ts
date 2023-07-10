@@ -1,5 +1,5 @@
 import { Token } from "../lexing/Token";
-import { Expression, Visitor } from "./Expression";
+import { Expression, ExpressionVisitor } from "./Expression";
 
 export class UnaryExpression extends Expression {
     readonly operator: Token;
@@ -15,7 +15,7 @@ export class UnaryExpression extends Expression {
         return `Unary Expression: ${this.operator} ${this.right}`;
     }
     
-    accept(v: Visitor) {
+    accept(v: ExpressionVisitor) {
         return v.visitForUnaryExpression(this);
     }
 }
