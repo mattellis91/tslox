@@ -9,14 +9,19 @@ import { LiteralExpression } from "../parsing/LiteralExpression";
 import { PrintStatement } from "../parsing/PrintStatement";
 import { Statement, StatementVisitor } from "../parsing/Statement";
 import { UnaryExpression } from "../parsing/UnaryExpression";
+import { VariableExpression } from "../parsing/VariableExpression";
+import { VariableStatement } from "../parsing/VariableStatement";
+import { Environment } from "./Environment";
 import { RuntimeError } from "./RuntimeError";
 
 export class Interpreter implements ExpressionVisitor, StatementVisitor {
 
+    private environment:Environment = new Environment();
+
     interpret(statements: Statement[]) {
         try {
             for(const statement of statements) {
-            const value = this.execute(statement);
+                this.execute(statement);
             }
         } catch (e) {
             TsLox.runtimeError(e);
@@ -106,6 +111,10 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
         return null;
     }
 
+    visitForVariableExpression(ve: VariableExpression) {
+        return this.environment.get(ve.name);
+    }
+
     visitForExpressionStatement(es: ExpressionStatement) {
         this.evaluate(es.expression);
     }
@@ -113,6 +122,16 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
     visitForPrintStatement(ps: PrintStatement) {
         const value = this.evaluate(ps.expression);
         console.log(this.stringify(value));
+    }
+
+    visitForVariableStatement(vs: VariableStatement) {
+        let value = null;
+        if(vs.initializer !== null) {
+            value = this.evaluate(vs.initializer);
+        }
+
+        this.environment.define(vs.name.lexeme, value);
+        return null;
     }
 
     private evaluate(expression: Expression) : any{

@@ -3,6 +3,7 @@ import { Expression, ExpressionVisitor } from "./Expression";
 import { GroupingExpression } from "./GroupingExpression";
 import { LiteralExpression } from "./LiteralExpression";
 import { UnaryExpression } from "./UnaryExpression";
+import { VariableExpression } from "./VariableExpression";
 
 export class AstPrinter implements ExpressionVisitor {
  
@@ -20,6 +21,10 @@ export class AstPrinter implements ExpressionVisitor {
     
     visitForLiteralExpression(le: LiteralExpression) : string {
         return le.value.toString();
+    }
+
+    visitForVariableExpression(ve: VariableExpression) {
+        return ve.toString();
     }
     
     visitForUnaryExpression(ue: UnaryExpression) : string {

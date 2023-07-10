@@ -10,6 +10,8 @@ import { TsLox } from "../TsLox";
 import { Statement } from "./Statement";
 import { PrintStatement } from "./PrintStatement";
 import { ExpressionStatement } from "./ExpressionStatement";
+import { VariableStatement } from "./VariableStatement";
+import { VariableExpression } from "./VariableExpression";
 
 export class Parser {
     private readonly tokens:Token[];
@@ -23,12 +25,39 @@ export class Parser {
         const statements:Statement[] = [];
         try {
             while(!this.isAtEnd()) {
-                statements.push(this.statement());
+                const v = this.declaration();
+                if(v)  {
+                    statements.push(v as unknown as Statement);
+                }
             }
             return statements;
         } catch (e) {
             return [];
         }
+    }
+
+    private declaration() : Statement | null{
+        try {
+            if(this.match([TokenType.VAR])) {
+                return this.varDeclaration();
+            }
+
+            return this.statement();
+        } catch (e) {
+            this.synchronize();
+            return null;
+        }
+    }
+
+    private varDeclaration() : Statement {
+        const name = this.consume(TokenType.IDENTIFIER, "Expected variable name.");
+        let initializer = null;
+        if(this.match([TokenType.EQUAL])) {
+            initializer = this.expression();
+        }
+
+        this.consume(TokenType.SEMICOLON, "Expected ';' after variable declaration.");
+        return new VariableStatement(name, initializer);
     }
 
     private statement() : Statement {
@@ -84,7 +113,7 @@ export class Parser {
         while(this.match([TokenType.MINUS, TokenType.PLUS])) {
             const operator = this.previous();
             const right = this.factor();
-            expression = new BinaryExpression(expression, operator, right);
+            expression = new BinaryExpression(expression, operator, right); 
         }
 
         return expression;
@@ -120,6 +149,9 @@ export class Parser {
         if(this.match([TokenType.NUMBER, TokenType.STRING])) {
             return new LiteralExpression(this.previous().literal);
         }
+
+        
+        if(this.match([TokenType.IDENTIFIER])) return new VariableExpression(this.previous());
 
         if(this.match([TokenType.LEFT_PAREN])) {
             const expression = this.expression();

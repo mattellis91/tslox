@@ -2,6 +2,7 @@ import { BinaryExpression } from "./BinaryExpression"
 import { GroupingExpression } from "./GroupingExpression"
 import { LiteralExpression } from "./LiteralExpression"
 import { UnaryExpression } from "./UnaryExpression"
+import { VariableExpression } from "./VariableExpression"
 
 export abstract class Expression { 
     abstract toString() : string; 
@@ -13,4 +14,5 @@ export interface ExpressionVisitor {
     visitForGroupingExpression(ge: GroupingExpression) : any
     visitForLiteralExpression(le: LiteralExpression) : any
     visitForUnaryExpression(ue: UnaryExpression) : any
+    visitForVariableExpression(ve: VariableExpression) : any
 }

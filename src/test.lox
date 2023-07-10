@@ -2,3 +2,8 @@ print "one";
 print "two";
 print 1 + 2;
 print true;
+print (1 + 2) > 2;
+
+var a = 1;
+var b = 20;
+print a + b;
