@@ -1,6 +1,7 @@
 import { TsLox } from "../TsLox";
 import { Token } from "../lexing/Token";
 import { TokenType } from "../lexing/TokenType";
+import { AssignmentExpression } from "../parsing/AssignmentExpression";
 import { BinaryExpression } from "../parsing/BinaryExpression";
 import { Expression, ExpressionVisitor } from "../parsing/Expression";
 import { ExpressionStatement } from "../parsing/ExpressionStatement";
@@ -61,6 +62,11 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
         }
 
         return null;
+    }
+
+    visitForAssignmentExpression(ae: AssignmentExpression) {
+        const value = this.evaluate(ae.value);
+        this.environment.assign(ae.name, value);
     }
 
     visitForBinaryExpression(be: BinaryExpression) : any {

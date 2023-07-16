@@ -1,9 +1,5 @@
-print "one";
-print "two";
-print 1 + 2;
-print true;
-print (1 + 2) > 2;
-
 var a = 1;
-var b = 20;
+var b = 2;
+var c = a + b;
 print a + b;
+print c;

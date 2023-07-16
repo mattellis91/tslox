@@ -12,6 +12,7 @@ import { PrintStatement } from "./PrintStatement";
 import { ExpressionStatement } from "./ExpressionStatement";
 import { VariableStatement } from "./VariableStatement";
 import { VariableExpression } from "./VariableExpression";
+import { AssignmentExpression } from "./AssignmentExpression";
 
 export class Parser {
     private readonly tokens:Token[];
@@ -68,6 +69,24 @@ export class Parser {
         return this.expressionStatement();
     }
 
+    private assignment() : Expression {
+        const expression = this.equality();
+
+        if(this.match([TokenType.EQUAL])) {
+            const equals = this.previous();
+            const value = this.assignment();
+
+            if(expression instanceof VariableExpression) {
+                const name = (expression as VariableExpression).name;
+                return new AssignmentExpression(name, value);
+            }
+
+            this.error(equals, "Invalid assignment target");
+        }
+
+        return expression;
+    }
+
     private expressionStatement() : Statement {
         const expression = this.expression();
         this.consume(TokenType.SEMICOLON, "Expect ';' after value");
@@ -81,7 +100,7 @@ export class Parser {
     }
 
     private expression() : Expression {
-        return this.equality();
+        return this.assignment();
     }
 
     private equality() : Expression {
