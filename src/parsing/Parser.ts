@@ -13,6 +13,7 @@ import { ExpressionStatement } from "./ExpressionStatement";
 import { VariableStatement } from "./VariableStatement";
 import { VariableExpression } from "./VariableExpression";
 import { AssignmentExpression } from "./AssignmentExpression";
+import { BlockStatement } from "./BlockStatement";
 
 export class Parser {
     private readonly tokens:Token[];
@@ -66,7 +67,21 @@ export class Parser {
             return this.printStatement();
         }
 
+        if(this.match([TokenType.LEFT_BRACE])) {
+            return new BlockStatement(this.block());
+        }
+
         return this.expressionStatement();
+    }
+
+    private block() : Statement[] {
+        const statements:Statement[] = [];
+        while(!this.check(TokenType.RIGHT_BRACE) && !this.isAtEnd()) {
+            statements.push(this.declaration() as unknown as Statement);    
+        }
+
+        this.consume(TokenType.RIGHT_BRACE, "Expect '}' after block.");
+        return statements;
     }
 
     private assignment() : Expression {

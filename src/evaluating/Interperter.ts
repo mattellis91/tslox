@@ -3,6 +3,7 @@ import { Token } from "../lexing/Token";
 import { TokenType } from "../lexing/TokenType";
 import { AssignmentExpression } from "../parsing/AssignmentExpression";
 import { BinaryExpression } from "../parsing/BinaryExpression";
+import { BlockStatement } from "../parsing/BlockStatement";
 import { Expression, ExpressionVisitor } from "../parsing/Expression";
 import { ExpressionStatement } from "../parsing/ExpressionStatement";
 import { GroupingExpression } from "../parsing/GroupingExpression";
@@ -130,6 +131,10 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
         console.log(this.stringify(value));
     }
 
+    visitForBlockStatement(bs: BlockStatement) {
+        this.executeBlock(bs.statements, new Environment(this.environment));
+    }
+
     visitForVariableStatement(vs: VariableStatement) {
         let value = null;
         if(vs.initializer !== null) {
@@ -146,6 +151,18 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
 
     private execute(statement: Statement) {
         statement.accept(this);
+    }
+
+    private executeBlock(statements: Statement[], environment: Environment) {
+        const previous = this.environment;
+        try {
+            this.environment = environment;
+            for(const statement of statements) {
+                this.execute(statement);
+            }
+        } finally {
+            this.environment = previous;
+        }
     }
 
     private isTruthy(val: any) : boolean {
