@@ -1,5 +1,6 @@
 import { BlockStatement } from "./BlockStatement";
 import { ExpressionStatement } from "./ExpressionStatement";
+import { IfStatement } from "./IfStatement";
 import { PrintStatement } from "./PrintStatement";
 import { VariableStatement } from "./VariableStatement";
 
@@ -12,4 +13,5 @@ export interface StatementVisitor {
     visitForExpressionStatement(es: ExpressionStatement) : any;
     visitForVariableStatement(vs: VariableStatement) : any
     visitForBlockStatement(bs: BlockStatement) : any
+    visitForIfStatement(is: IfStatement) : any
 }

@@ -14,6 +14,7 @@ import { VariableStatement } from "./VariableStatement";
 import { VariableExpression } from "./VariableExpression";
 import { AssignmentExpression } from "./AssignmentExpression";
 import { BlockStatement } from "./BlockStatement";
+import { IfStatement } from "./IfStatement";
 
 export class Parser {
     private readonly tokens:Token[];
@@ -63,6 +64,11 @@ export class Parser {
     }
 
     private statement() : Statement {
+        
+        if(this.match([TokenType.IF])) {
+            return this.ifStatement();
+        }
+        
         if(this.match([TokenType.PRINT])) {
             return this.printStatement();
         }
@@ -112,6 +118,20 @@ export class Parser {
         const value = this.expression();
         this.consume(TokenType.SEMICOLON, "Expect ';' after value.");
         return new PrintStatement(value);
+    }
+
+    private ifStatement() : Statement {
+        this.consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
+        const condition = this.expression();
+        this.consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
+
+        const thenBranch = this.statement();
+        let elseBranch = null;
+        if(this.match([TokenType.ELSE])) {
+            elseBranch = this.statement();
+        }
+
+        return new IfStatement(condition, thenBranch, elseBranch);
     }
 
     private expression() : Expression {

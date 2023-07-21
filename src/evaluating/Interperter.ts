@@ -7,6 +7,7 @@ import { BlockStatement } from "../parsing/BlockStatement";
 import { Expression, ExpressionVisitor } from "../parsing/Expression";
 import { ExpressionStatement } from "../parsing/ExpressionStatement";
 import { GroupingExpression } from "../parsing/GroupingExpression";
+import { IfStatement } from "../parsing/IfStatement";
 import { LiteralExpression } from "../parsing/LiteralExpression";
 import { PrintStatement } from "../parsing/PrintStatement";
 import { Statement, StatementVisitor } from "../parsing/Statement";
@@ -129,6 +130,15 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
     visitForPrintStatement(ps: PrintStatement) {
         const value = this.evaluate(ps.expression);
         console.log(this.stringify(value));
+    }
+
+    visitForIfStatement(is: IfStatement) {
+        if(this.isTruthy(this.evaluate(is.condition))) {
+            this.execute(is.thenBranch);
+        } else if(is.elseBranch !== null) {
+            this.execute(is.elseBranch);
+        }
+        return null;
     }
 
     visitForBlockStatement(bs: BlockStatement) {
