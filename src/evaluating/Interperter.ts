@@ -9,6 +9,7 @@ import { ExpressionStatement } from "../parsing/ExpressionStatement";
 import { GroupingExpression } from "../parsing/GroupingExpression";
 import { IfStatement } from "../parsing/IfStatement";
 import { LiteralExpression } from "../parsing/LiteralExpression";
+import { LogicalExpression } from "../parsing/LogicalExpression";
 import { PrintStatement } from "../parsing/PrintStatement";
 import { Statement, StatementVisitor } from "../parsing/Statement";
 import { UnaryExpression } from "../parsing/UnaryExpression";
@@ -130,6 +131,22 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
     visitForPrintStatement(ps: PrintStatement) {
         const value = this.evaluate(ps.expression);
         console.log(this.stringify(value));
+    }
+
+    visitForLogicalExpression(le: LogicalExpression) {
+        const left = this.evaluate(le.left);
+
+        if(le.operator.type === TokenType.OR) {
+            if(this.isTruthy(left)) { 
+                return left; 
+            }
+        } else {
+            if(!this.isTruthy(left)) {
+                return left;
+            }
+        }
+
+        return this.evaluate(le.right);
     }
 
     visitForIfStatement(is: IfStatement) {

@@ -2,6 +2,7 @@ import { AssignmentExpression } from "./AssignmentExpression"
 import { BinaryExpression } from "./BinaryExpression"
 import { GroupingExpression } from "./GroupingExpression"
 import { LiteralExpression } from "./LiteralExpression"
+import { LogicalExpression } from "./LogicalExpression"
 import { UnaryExpression } from "./UnaryExpression"
 import { VariableExpression } from "./VariableExpression"
 
@@ -17,4 +18,5 @@ export interface ExpressionVisitor {
     visitForUnaryExpression(ue: UnaryExpression) : any
     visitForVariableExpression(ve: VariableExpression) : any
     visitForAssignmentExpression(ae: AssignmentExpression) : any
+    visitForLogicalExpression(le: LogicalExpression) : any
 }

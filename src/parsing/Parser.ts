@@ -15,6 +15,7 @@ import { VariableExpression } from "./VariableExpression";
 import { AssignmentExpression } from "./AssignmentExpression";
 import { BlockStatement } from "./BlockStatement";
 import { IfStatement } from "./IfStatement";
+import { LogicalExpression } from "./LogicalExpression";
 
 export class Parser {
     private readonly tokens:Token[];
@@ -91,7 +92,7 @@ export class Parser {
     }
 
     private assignment() : Expression {
-        const expression = this.equality();
+        const expression = this.or();
 
         if(this.match([TokenType.EQUAL])) {
             const equals = this.previous();
@@ -103,6 +104,30 @@ export class Parser {
             }
 
             this.error(equals, "Invalid assignment target");
+        }
+
+        return expression;
+    }
+
+    private or() : Expression {
+        let expression = this.and();
+
+        while(this.match([TokenType.OR])) {
+            const operator = this.previous();
+            const right = this.and();
+            expression = new LogicalExpression(expression, operator, right);
+        }
+
+        return expression
+    }
+
+    private and() : Expression {
+        let expression = this.equality();
+
+        while(this.match([TokenType.AND])) {
+            const operator = this.previous();
+            const right = this.equality();
+            expression = new LogicalExpression(expression, operator, right);
         }
 
         return expression;
