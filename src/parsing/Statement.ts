@@ -3,6 +3,7 @@ import { ExpressionStatement } from "./ExpressionStatement";
 import { IfStatement } from "./IfStatement";
 import { PrintStatement } from "./PrintStatement";
 import { VariableStatement } from "./VariableStatement";
+import { WhileStatement } from "./WhileStatement";
 
 export abstract class Statement {
     abstract accept(v: StatementVisitor) : any;
@@ -14,4 +15,5 @@ export interface StatementVisitor {
     visitForVariableStatement(vs: VariableStatement) : any
     visitForBlockStatement(bs: BlockStatement) : any
     visitForIfStatement(is: IfStatement) : any
+    visitForWhileStatement(ws: WhileStatement) : any
 }

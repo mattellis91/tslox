@@ -16,6 +16,7 @@ import { AssignmentExpression } from "./AssignmentExpression";
 import { BlockStatement } from "./BlockStatement";
 import { IfStatement } from "./IfStatement";
 import { LogicalExpression } from "./LogicalExpression";
+import { WhileStatement } from "./WhileStatement";
 
 export class Parser {
     private readonly tokens:Token[];
@@ -64,6 +65,15 @@ export class Parser {
         return new VariableStatement(name, initializer);
     }
 
+    private whileStatement() : Statement {
+        this.consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.");
+        const condition = this.expression();
+        this.consume(TokenType.RIGHT_PAREN, "Expect ')' after condition.");
+        const body = this.statement();
+
+        return new WhileStatement(condition, body);
+    }
+
     private statement() : Statement {
         
         if(this.match([TokenType.IF])) {
@@ -72,6 +82,10 @@ export class Parser {
         
         if(this.match([TokenType.PRINT])) {
             return this.printStatement();
+        }
+
+        if(this.match([TokenType.WHILE])) {
+            return this.whileStatement();
         }
 
         if(this.match([TokenType.LEFT_BRACE])) {

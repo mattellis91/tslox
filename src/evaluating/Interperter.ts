@@ -15,6 +15,7 @@ import { Statement, StatementVisitor } from "../parsing/Statement";
 import { UnaryExpression } from "../parsing/UnaryExpression";
 import { VariableExpression } from "../parsing/VariableExpression";
 import { VariableStatement } from "../parsing/VariableStatement";
+import { WhileStatement } from "../parsing/WhileStatement";
 import { Environment } from "./Environment";
 import { RuntimeError } from "./RuntimeError";
 
@@ -154,6 +155,13 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
             this.execute(is.thenBranch);
         } else if(is.elseBranch !== null) {
             this.execute(is.elseBranch);
+        }
+        return null;
+    }
+
+    visitForWhileStatement(ws: WhileStatement) {
+        while(this.isTruthy(this.evaluate(ws.condition))) {
+            this.execute(ws.body);
         }
         return null;
     }
