@@ -31,3 +31,12 @@ while (count < 10) {
 
 print "hi" or 2; // "hi".
 print nil or "yes"; // "yes".
+
+var i = 0;
+var temp;
+
+for (var j = 1; i < 10000; j = temp + j) {
+  print i;
+  temp = i;
+  i = j;
+}
