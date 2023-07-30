@@ -1,7 +1,9 @@
 import { BlockStatement } from "./BlockStatement";
 import { ExpressionStatement } from "./ExpressionStatement";
+import { FunctionStatement } from "./FunctionStatement";
 import { IfStatement } from "./IfStatement";
 import { PrintStatement } from "./PrintStatement";
+import { ReturnStatement } from "./ReturnStatement";
 import { VariableStatement } from "./VariableStatement";
 import { WhileStatement } from "./WhileStatement";
 
@@ -16,4 +18,6 @@ export interface StatementVisitor {
     visitForBlockStatement(bs: BlockStatement) : any
     visitForIfStatement(is: IfStatement) : any
     visitForWhileStatement(ws: WhileStatement) : any
+    visitForFunctionStatement(fs: FunctionStatement) : any
+    visitForReturnStatement(rs: ReturnStatement) : any
 }

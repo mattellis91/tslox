@@ -40,3 +40,14 @@ for (var j = 1; i < 10000; j = temp + j) {
   temp = i;
   i = j;
 }
+
+fun fib(n) {
+  if (n <= 1) return n;
+  return fib(n - 2) + fib(n - 1);
+}
+
+for (var i = 0; i < 5; i = i + 1) {
+  print fib(i);
+}
+
+temp();

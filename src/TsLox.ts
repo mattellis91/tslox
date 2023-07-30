@@ -95,7 +95,7 @@ export class TsLox {
     }
 
     static runtimeError(e: RuntimeError) {
-        console.log(`${e.message} \n [line ${e.token.line} ]`);
+        console.log(`${e.message} \n [line ${e.token?.line} ]`);
         TsLox.hadRuntimeError = true;
     }
 }

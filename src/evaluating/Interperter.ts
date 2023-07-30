@@ -4,24 +4,40 @@ import { TokenType } from "../lexing/TokenType";
 import { AssignmentExpression } from "../parsing/AssignmentExpression";
 import { BinaryExpression } from "../parsing/BinaryExpression";
 import { BlockStatement } from "../parsing/BlockStatement";
+import { CallExpression } from "../parsing/CallExpression";
 import { Expression, ExpressionVisitor } from "../parsing/Expression";
 import { ExpressionStatement } from "../parsing/ExpressionStatement";
+import { FunctionStatement } from "../parsing/FunctionStatement";
 import { GroupingExpression } from "../parsing/GroupingExpression";
 import { IfStatement } from "../parsing/IfStatement";
 import { LiteralExpression } from "../parsing/LiteralExpression";
 import { LogicalExpression } from "../parsing/LogicalExpression";
 import { PrintStatement } from "../parsing/PrintStatement";
+import { ReturnStatement } from "../parsing/ReturnStatement";
 import { Statement, StatementVisitor } from "../parsing/Statement";
 import { UnaryExpression } from "../parsing/UnaryExpression";
 import { VariableExpression } from "../parsing/VariableExpression";
 import { VariableStatement } from "../parsing/VariableStatement";
 import { WhileStatement } from "../parsing/WhileStatement";
+import { Callable } from "./Callable";
 import { Environment } from "./Environment";
+import { LoxFunction } from "./LoxFunction";
+import { Return } from "./Return";
 import { RuntimeError } from "./RuntimeError";
 
 export class Interpreter implements ExpressionVisitor, StatementVisitor {
 
-    private environment:Environment = new Environment();
+    readonly globals:Environment = new Environment();
+    private environment:Environment = this.globals;
+
+    constructor() {
+        this.globals.define("clock", new Object({
+            arity() { return 0; },
+            call(interpreter: Interpreter, args: any[]) {
+                return Date.now() / 1000;
+            }
+        }));
+    }
 
     interpret(statements: Statement[]) {
         try {
@@ -121,6 +137,28 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
         return null;
     }
 
+    visitForCallExpression(ce: CallExpression) {
+        const callee = this.evaluate(ce.callee);
+
+        const args = [];
+        for(const arg of ce.args) {
+            args.push(this.evaluate(arg));
+        }
+
+        if(!('call' in callee)) {
+            throw new RuntimeError(ce.paren, "Can only call functions and classes.");
+        }
+
+        //console.log(callee);
+
+        const func = callee as Callable;
+        if(args.length !== func.arity()) {
+            throw new RuntimeError(ce.paren, `Expected ${func.arity()} arguments but got ${args.length}.`);
+        }
+
+        return func.call(this, args);
+    }
+
     visitForVariableExpression(ve: VariableExpression) {
         return this.environment.get(ve.name);
     }
@@ -129,9 +167,23 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
         this.evaluate(es.expression);
     }
 
+    visitForFunctionStatement(fs: FunctionStatement) {
+        const func = new LoxFunction(fs);
+        this.environment.define(fs.name.lexeme, func);
+    }
+
     visitForPrintStatement(ps: PrintStatement) {
         const value = this.evaluate(ps.expression);
         console.log(this.stringify(value));
+    }
+
+    visitForReturnStatement(rs: ReturnStatement) {
+        let value = null;
+        if(rs.value !== null) {
+            value = this.evaluate(rs.value);
+        }
+
+        throw new Return(value);
     }
 
     visitForLogicalExpression(le: LogicalExpression) {
