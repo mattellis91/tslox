@@ -29,6 +29,7 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
 
     readonly globals:Environment = new Environment();
     private environment:Environment = this.globals;
+    readonly locals:Map<Expression, number> = new Map<Expression, number>();
 
     constructor() {
         this.globals.define("clock", new Object({
@@ -86,7 +87,13 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
 
     visitForAssignmentExpression(ae: AssignmentExpression) {
         const value = this.evaluate(ae.value);
-        this.environment.assign(ae.name, value);
+        const distance = this.locals.get(ae);
+        if(distance !== undefined) {
+            this.environment.assignAt(distance, ae.name, value);
+        } else {
+            this.globals.assign(ae.name, value);
+        }
+        return value
     }
 
     visitForBinaryExpression(be: BinaryExpression) : any {
@@ -160,7 +167,17 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
     }
 
     visitForVariableExpression(ve: VariableExpression) {
-        return this.environment.get(ve.name);
+        return this.lookupVariable(ve.name, ve);
+    }
+
+    private lookupVariable(name:Token, expression:Expression) : any {
+        const distance = this.locals.get(expression);
+        if(distance !== undefined) {
+            return this.environment.getAt(distance, name.lexeme);
+        } else {
+            console.log(this.globals);
+            return this.globals.get(name);
+        }
     }
 
     visitForExpressionStatement(es: ExpressionStatement) {
@@ -168,7 +185,7 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
     }
 
     visitForFunctionStatement(fs: FunctionStatement) {
-        const func = new LoxFunction(fs);
+        const func = new LoxFunction(fs, this.environment);
         this.environment.define(fs.name.lexeme, func);
     }
 
@@ -238,6 +255,10 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
 
     private execute(statement: Statement) {
         statement.accept(this);
+    }
+
+    resolve(expression: Expression, depth: number) {
+        this.locals.set(expression, depth);
     }
 
     private executeBlock(statements: Statement[], environment: Environment) {
