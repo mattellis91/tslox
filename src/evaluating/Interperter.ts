@@ -168,7 +168,7 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
     }
 
     visitForFunctionStatement(fs: FunctionStatement) {
-        const func = new LoxFunction(fs);
+        const func = new LoxFunction(fs, this.environment);
         this.environment.define(fs.name.lexeme, func);
     }
 

@@ -36,9 +36,9 @@ export class TsLox {
             const f = readFileSync(path, 'utf-8');
             
             const tokens = new Scanner(f.toString()).scanTokens();
-            console.log(tokens);
+            //console.log(tokens);
             const statements = new Parser(tokens).parse();
-            console.log(statements);
+            //console.log(statements);
             if(TsLox.hadError) {
                 return;
             }
