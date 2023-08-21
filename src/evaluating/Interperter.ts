@@ -145,9 +145,9 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
             args.push(this.evaluate(arg));
         }
 
-        if(!('call' in callee)) {
-            throw new RuntimeError(ce.paren, "Can only call functions and classes.");
-        }
+        // if(!('call' in callee)) {
+        //     throw new RuntimeError(ce.paren, "Can only call functions and classes.");
+        // }
 
         //console.log(callee);
 
