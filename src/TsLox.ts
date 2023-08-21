@@ -12,7 +12,6 @@ import { Parser } from "./parsing/Parser";
 import { exit } from "process";
 import { RuntimeError } from "./evaluating/RuntimeError";
 import { Interpreter } from "./evaluating/Interperter";
-import { Resolver } from "./evaluating/Resolver";
 
 export class TsLox {
 
@@ -42,17 +41,9 @@ export class TsLox {
             console.log(statements);
             if(TsLox.hadError) {
                 return;
-            } 
-
-            const interpreter = new Interpreter();
-            const resolver = new Resolver(interpreter);
-
-            if(TsLox.hadError) {
-                return;
             }
 
             if(statements.length) {
-                resolver.resolve(statements);
                 new Interpreter().interpret(statements)
             }
 

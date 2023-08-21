@@ -6,14 +6,12 @@ import { Return } from "./Return";
 
 export class LoxFunction implements Callable {
     readonly declaration: FunctionStatement;
-    readonly closure: Environment;
-    constructor(declaration: FunctionStatement, closure: Environment) {
+    constructor(declaration: FunctionStatement) {
         this.declaration = declaration;
-        this.closure = closure;
     }
 
     call(interpreter: any, args: any[]) {
-        const environment = new Environment(this.closure);
+        const environment = new Environment(interpreter.globals);
         for(let i = 0; i < this.declaration.params.length; i++) {
             environment.define(this.declaration.params[i].lexeme, args[i]);
         }
