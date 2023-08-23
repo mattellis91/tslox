@@ -159,10 +159,7 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
         //     throw new RuntimeError(ce.paren, "Can only call functions and classes.");
         // }
 
-        //console.log(callee);
-
         const func = callee as Callable;
-        //console.log(func)
         if(args.length !== func.arity()) {
             throw new RuntimeError(ce.paren, `Expected ${func.arity()} arguments but got ${args.length}.`);
         }

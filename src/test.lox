@@ -1,54 +1,54 @@
-// var a = "global a";
-// var b = "global b";
-// var c = "global c";
-// {
-//   var a = "outer a";
-//   var b = "outer b";
-//   {
-//     var a = "inner a";
-//     print a;
-//     print b;
-//     print c;
-//   }
-//   print a;
-//   print b;
-//   print c;
-// }
-// print a;
-// print b;
-// print c;
+var a = "global a";
+var b = "global b";
+var c = "global c";
+{
+  var a = "outer a";
+  var b = "outer b";
+  {
+    var a = "inner a";
+    print a;
+    print b;
+    print c;
+  }
+  print a;
+  print b;
+  print c;
+}
+print a;
+print b;
+print c;
 
-// var i = -2;
-// if(i > 0 and true) {
-//   print i;
-// }
+var i = -2;
+if(i > 0 and true) {
+  print i;
+}
 
-// var count = 1;
-// while (count < 10) {
-//   print count;
-//   count = count + 1;
-// }
+var count = 1;
+while (count < 10) {
+  print count;
+  count = count + 1;
+}
 
-// print "hi" or 2; // "hi".
-// print nil or "yes"; // "yes".
+print "hi" or 2; // "hi".
+print nil or "yes"; // "yes".
 
-// var i = 0;
-// var temp;
+var i = 0;
+var temp;
 
-// for (var j = 1; i < 10000; j = temp + j) {
-//   print i;
-//   temp = i;
-//   i = j;
-// }
+for (var j = 1; i < 10000; j = temp + j) {
+  print i;
+  temp = i;
+  i = j;
+}
 
-// fun fib(n) {
-//   if (n <= 1) return n;
-//   return fib(n - 2) + fib(n - 1);
-// }
+fun fib(n) {
+  if (n <= 1) return n;
+  return fib(n - 2) + fib(n - 1);
+}
 
-// for (var i = 0; i < 5; i = i + 1) {
-//   print fib(i);
-// }
+for (var i = 0; i < 5; i = i + 1) {
+  print fib(i);
+}
 
 fun makeCounter() {
   var i = 0;
@@ -63,3 +63,5 @@ fun makeCounter() {
 var counter = makeCounter();
 counter(); // "1".
 counter(); // "2".
+
+//return "top";

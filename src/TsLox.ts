@@ -48,6 +48,11 @@ export class TsLox {
                 const inter = new Interpreter()
                 const resolver = new Resolver(inter);
                 resolver.resolve(statements);
+
+                if(TsLox.hadError) {
+                    return;
+                }
+
                 inter.interpret(statements);
             }
 

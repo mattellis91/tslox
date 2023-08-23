@@ -19,9 +19,15 @@ import { VariableStatement } from "../parsing/VariableStatement";
 import { WhileStatement } from "../parsing/WhileStatement";
 import { Interpreter } from "./Interperter";
 
+enum FunctionType {
+    NONE,
+    FUNCTION
+}
+
 export class Resolver implements ExpressionVisitor, StatementVisitor {
     readonly interpreter: Interpreter;
     readonly scopes: Map<string, boolean>[] = [];
+    private currentFunction: FunctionType = FunctionType.NONE;
 
     constructor(interpreter: Interpreter) {
         this.interpreter = interpreter;
@@ -41,7 +47,9 @@ export class Resolver implements ExpressionVisitor, StatementVisitor {
         expression.accept(this);
     }
 
-    resolveFunction(fs: FunctionStatement) {
+    resolveFunction(fs: FunctionStatement, type: FunctionType) {
+        const enclosingFunction = this.currentFunction;
+        this.currentFunction = type;
         this.beginScope();
         for(const param of fs.params) {
             this.declare(param);
@@ -49,6 +57,7 @@ export class Resolver implements ExpressionVisitor, StatementVisitor {
         }
         this.resolve(fs.body);
         this.endScope();
+        this.currentFunction = enclosingFunction;
     }
 
     resolveLocal(expression: Expression, name: Token) {
@@ -76,7 +85,7 @@ export class Resolver implements ExpressionVisitor, StatementVisitor {
     visitForFunctionStatement(fs: FunctionStatement) {
         this.declare(fs.name);
         this.define(fs.name);
-        this.resolveFunction(fs);
+        this.resolveFunction(fs, FunctionType.FUNCTION);
         return null;
     }
 
@@ -117,6 +126,9 @@ export class Resolver implements ExpressionVisitor, StatementVisitor {
     }
 
     visitForReturnStatement(ps: ReturnStatement) {
+        if(this.currentFunction === FunctionType.NONE) {
+            throw new Error("Cannot return from top-level code.");
+        }
         if(ps.value !== null) {
             this.resolveExpression(ps.value);
         }
@@ -166,6 +178,11 @@ export class Resolver implements ExpressionVisitor, StatementVisitor {
     private declare(name: Token) {
         if(this.scopes.length === 0) return;
         const scope = this.scopes[this.scopes.length - 1];
+
+        if(scope.has(name.lexeme)) {
+            throw new Error("Already variable with this name in this scope.");
+        }
+
         scope.set(name.lexeme, false);
     }
 
