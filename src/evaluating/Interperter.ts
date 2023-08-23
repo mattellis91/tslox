@@ -29,6 +29,7 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
 
     readonly globals:Environment = new Environment();
     private environment:Environment = this.globals;
+    readonly locals: Map<Expression, number> = new Map();
 
     constructor() {
         this.globals.define("clock", new Object({
@@ -37,6 +38,10 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
                 return Date.now() / 1000;
             }
         }));
+    }
+
+    resolve(expression:Expression, depth:number) {
+        this.locals.set(expression, depth);
     }
 
     interpret(statements: Statement[]) {
@@ -86,7 +91,12 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
 
     visitForAssignmentExpression(ae: AssignmentExpression) {
         const value = this.evaluate(ae.value);
-        this.environment.assign(ae.name, value);
+        const distance = this.locals.get(ae);
+        if(distance !== undefined) {
+            this.environment.assignAt(distance, ae.name, value);
+        } else {
+            this.globals.assign(ae.name, value);
+        }
     }
 
     visitForBinaryExpression(be: BinaryExpression) : any {
@@ -152,6 +162,7 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
         //console.log(callee);
 
         const func = callee as Callable;
+        //console.log(func)
         if(args.length !== func.arity()) {
             throw new RuntimeError(ce.paren, `Expected ${func.arity()} arguments but got ${args.length}.`);
         }
@@ -160,7 +171,16 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
     }
 
     visitForVariableExpression(ve: VariableExpression) {
-        return this.environment.get(ve.name);
+        return this.lookUpVariable(ve.name, ve);
+    }
+
+    lookUpVariable(name:Token, expression:Expression) {
+        const distance = this.locals.get(expression);
+        if(distance !== undefined) {
+            return this.environment.getAt(distance, name.lexeme);
+        } else {
+            return this.globals.get(name);
+        }
     }
 
     visitForExpressionStatement(es: ExpressionStatement) {
