@@ -21,6 +21,8 @@ import { CallExpression } from "./CallExpression";
 import { FunctionStatement } from "./FunctionStatement";
 import { ReturnStatement } from "./ReturnStatement";
 import { ClassStatement } from "./ClassStatement";
+import { GetExpression } from "./GetExpression";
+import { SetExpression } from "./SetExpression";
 
 export class Parser {
     private readonly tokens:Token[];
@@ -214,6 +216,9 @@ export class Parser {
             if(expression instanceof VariableExpression) {
                 const name = (expression as VariableExpression).name;
                 return new AssignmentExpression(name, value);
+            } else if(expression instanceof GetExpression) {
+                const get = expression as GetExpression;
+                return new SetExpression(get.object, get.name, value);
             }
 
             this.error(equals, "Invalid assignment target");
@@ -350,6 +355,9 @@ export class Parser {
         while(true) {
             if(this.match([TokenType.LEFT_PAREN])) {
                 expression = this.finishCall(expression);
+            } else if(this.match([TokenType.DOT])) {
+                const name = this.consume(TokenType.IDENTIFIER, "Expect property name after '.'.");
+                expression = new GetExpression(expression, name);
             } else {
                 break;
             }

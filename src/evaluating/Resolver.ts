@@ -7,12 +7,14 @@ import { ClassStatement } from "../parsing/ClassStatement";
 import { Expression, ExpressionVisitor } from "../parsing/Expression";
 import { ExpressionStatement } from "../parsing/ExpressionStatement";
 import { FunctionStatement } from "../parsing/FunctionStatement";
+import { GetExpression } from "../parsing/GetExpression";
 import { GroupingExpression } from "../parsing/GroupingExpression";
 import { IfStatement } from "../parsing/IfStatement";
 import { LiteralExpression } from "../parsing/LiteralExpression";
 import { LogicalExpression } from "../parsing/LogicalExpression";
 import { PrintStatement } from "../parsing/PrintStatement";
 import { ReturnStatement } from "../parsing/ReturnStatement";
+import { SetExpression } from "../parsing/SetExpression";
 import { Statement, StatementVisitor } from "../parsing/Statement";
 import { UnaryExpression } from "../parsing/UnaryExpression";
 import { VariableExpression } from "../parsing/VariableExpression";
@@ -151,6 +153,17 @@ export class Resolver implements ExpressionVisitor, StatementVisitor {
     visitForBinaryExpression(be: BinaryExpression) {
         this.resolveExpression(be.left);
         this.resolveExpression(be.right);
+        return null;
+    }
+
+    visitForGetExpression(ge: GetExpression) {
+        this.resolveExpression(ge.object);
+        return null;
+    }
+
+    visitForSetExpression(se: SetExpression) {
+        this.resolveExpression(se.value);
+        this.resolveExpression(se.object);
         return null;
     }
 

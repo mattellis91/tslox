@@ -66,10 +66,9 @@ counter(); // "2".
 
 //return "top";
 
-class DevonshireCream {
-  serveOn() {
-    return "Scones";
-  }
-}
+class Bagel {}
+var bagel = Bagel();
+print bagel; // Prints "Bagel instance".
 
-print DevonshireCream; // Prints "DevonshireCream".
+bagel.flavour = "Plain";
+print bagel.flavour;

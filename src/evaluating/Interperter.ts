@@ -9,12 +9,14 @@ import { ClassStatement } from "../parsing/ClassStatement";
 import { Expression, ExpressionVisitor } from "../parsing/Expression";
 import { ExpressionStatement } from "../parsing/ExpressionStatement";
 import { FunctionStatement } from "../parsing/FunctionStatement";
+import { GetExpression } from "../parsing/GetExpression";
 import { GroupingExpression } from "../parsing/GroupingExpression";
 import { IfStatement } from "../parsing/IfStatement";
 import { LiteralExpression } from "../parsing/LiteralExpression";
 import { LogicalExpression } from "../parsing/LogicalExpression";
 import { PrintStatement } from "../parsing/PrintStatement";
 import { ReturnStatement } from "../parsing/ReturnStatement";
+import { SetExpression } from "../parsing/SetExpression";
 import { Statement, StatementVisitor } from "../parsing/Statement";
 import { UnaryExpression } from "../parsing/UnaryExpression";
 import { VariableExpression } from "../parsing/VariableExpression";
@@ -24,6 +26,7 @@ import { Callable } from "./Callable";
 import { Environment } from "./Environment";
 import { LoxClass } from "./LoxClass";
 import { LoxFunction } from "./LoxFunction";
+import { LoxInstance } from "./LoxInstance";
 import { Return } from "./Return";
 import { RuntimeError } from "./RuntimeError";
 
@@ -226,6 +229,27 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
         }
 
         return this.evaluate(le.right);
+    }
+
+    visitForGetExpression(ge: GetExpression) {
+        const object = this.evaluate(ge.object);
+        if(object instanceof LoxInstance) {
+            return object.get(ge.name);
+        }
+
+        throw new RuntimeError(ge.name, "Only instances have properties.");
+    }
+
+    visitForSetExpression(se: SetExpression) {
+        const object = this.evaluate(se.object);
+
+        if(!(object instanceof LoxInstance)) {
+            throw new RuntimeError(se.name, "Only instances have fields.");
+        }
+
+        const value = this.evaluate(se.value);
+        object.set(se.name, value);
+        return value;
     }
 
     visitForIfStatement(is: IfStatement) {
