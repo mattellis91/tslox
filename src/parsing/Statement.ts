@@ -6,6 +6,7 @@ import { PrintStatement } from "./PrintStatement";
 import { ReturnStatement } from "./ReturnStatement";
 import { VariableStatement } from "./VariableStatement";
 import { WhileStatement } from "./WhileStatement";
+import { ClassStatement } from "./ClassStatement";
 
 export abstract class Statement {
     abstract accept(v: StatementVisitor) : any;
@@ -20,4 +21,5 @@ export interface StatementVisitor {
     visitForWhileStatement(ws: WhileStatement) : any
     visitForFunctionStatement(fs: FunctionStatement) : any
     visitForReturnStatement(rs: ReturnStatement) : any
+    visitForClassStatement(cs: ClassStatement) : any
 }

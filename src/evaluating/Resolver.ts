@@ -3,6 +3,7 @@ import { AssignmentExpression } from "../parsing/AssignmentExpression";
 import { BinaryExpression } from "../parsing/BinaryExpression";
 import { BlockStatement } from "../parsing/BlockStatement";
 import { CallExpression } from "../parsing/CallExpression";
+import { ClassStatement } from "../parsing/ClassStatement";
 import { Expression, ExpressionVisitor } from "../parsing/Expression";
 import { ExpressionStatement } from "../parsing/ExpressionStatement";
 import { FunctionStatement } from "../parsing/FunctionStatement";
@@ -122,6 +123,12 @@ export class Resolver implements ExpressionVisitor, StatementVisitor {
 
     visitForPrintStatement(ps: PrintStatement) {
         this.resolveExpression(ps.expression);
+        return null;
+    }
+
+    visitForClassStatement(cs: ClassStatement) {
+        this.declare(cs.name);
+        this.define(cs.name);
         return null;
     }
 

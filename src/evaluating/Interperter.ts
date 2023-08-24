@@ -5,6 +5,7 @@ import { AssignmentExpression } from "../parsing/AssignmentExpression";
 import { BinaryExpression } from "../parsing/BinaryExpression";
 import { BlockStatement } from "../parsing/BlockStatement";
 import { CallExpression } from "../parsing/CallExpression";
+import { ClassStatement } from "../parsing/ClassStatement";
 import { Expression, ExpressionVisitor } from "../parsing/Expression";
 import { ExpressionStatement } from "../parsing/ExpressionStatement";
 import { FunctionStatement } from "../parsing/FunctionStatement";
@@ -21,6 +22,7 @@ import { VariableStatement } from "../parsing/VariableStatement";
 import { WhileStatement } from "../parsing/WhileStatement";
 import { Callable } from "./Callable";
 import { Environment } from "./Environment";
+import { LoxClass } from "./LoxClass";
 import { LoxFunction } from "./LoxFunction";
 import { Return } from "./Return";
 import { RuntimeError } from "./RuntimeError";
@@ -187,6 +189,13 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
     visitForFunctionStatement(fs: FunctionStatement) {
         const func = new LoxFunction(fs, this.environment);
         this.environment.define(fs.name.lexeme, func);
+    }
+
+    visitForClassStatement(cs: ClassStatement) {
+        this.environment.define(cs.name.lexeme, null);
+        const lClass = new LoxClass(cs.name.lexeme);
+        this.environment.assign(cs.name, lClass);
+        return null;
     }
 
     visitForPrintStatement(ps: PrintStatement) {

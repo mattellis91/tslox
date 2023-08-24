@@ -65,3 +65,11 @@ counter(); // "1".
 counter(); // "2".
 
 //return "top";
+
+class DevonshireCream {
+  serveOn() {
+    return "Scones";
+  }
+}
+
+print DevonshireCream; // Prints "DevonshireCream".
