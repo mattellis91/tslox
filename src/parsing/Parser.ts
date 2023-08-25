@@ -23,6 +23,7 @@ import { ReturnStatement } from "./ReturnStatement";
 import { ClassStatement } from "./ClassStatement";
 import { GetExpression } from "./GetExpression";
 import { SetExpression } from "./SetExpression";
+import { ThisExpression } from "./ThisExpression";
 
 export class Parser {
     private readonly tokens:Token[];
@@ -391,7 +392,7 @@ export class Parser {
             return new LiteralExpression(this.previous().literal);
         }
 
-        
+        if(this.match([TokenType.THIS])) return new ThisExpression(this.previous());
         if(this.match([TokenType.IDENTIFIER])) return new VariableExpression(this.previous());
 
         if(this.match([TokenType.LEFT_PAREN])) {

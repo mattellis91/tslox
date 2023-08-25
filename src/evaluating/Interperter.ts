@@ -18,6 +18,7 @@ import { PrintStatement } from "../parsing/PrintStatement";
 import { ReturnStatement } from "../parsing/ReturnStatement";
 import { SetExpression } from "../parsing/SetExpression";
 import { Statement, StatementVisitor } from "../parsing/Statement";
+import { ThisExpression } from "../parsing/ThisExpression";
 import { UnaryExpression } from "../parsing/UnaryExpression";
 import { VariableExpression } from "../parsing/VariableExpression";
 import { VariableStatement } from "../parsing/VariableStatement";
@@ -257,6 +258,10 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
         const value = this.evaluate(se.value);
         object.set(se.name, value);
         return value;
+    }
+
+    visitForThisExpression(te: ThisExpression) {
+        return this.lookUpVariable(te.keyword, te);
     }
 
     visitForIfStatement(is: IfStatement) {

@@ -1,4 +1,5 @@
 import { Callable } from "./Callable";
+import { Environment } from "./Environment";
 import { LoxFunction } from "./LoxFunction";
 import { LoxInstance } from "./LoxInstance";
 

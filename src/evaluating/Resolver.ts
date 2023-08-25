@@ -16,6 +16,7 @@ import { PrintStatement } from "../parsing/PrintStatement";
 import { ReturnStatement } from "../parsing/ReturnStatement";
 import { SetExpression } from "../parsing/SetExpression";
 import { Statement, StatementVisitor } from "../parsing/Statement";
+import { ThisExpression } from "../parsing/ThisExpression";
 import { UnaryExpression } from "../parsing/UnaryExpression";
 import { VariableExpression } from "../parsing/VariableExpression";
 import { VariableStatement } from "../parsing/VariableStatement";
@@ -28,10 +29,16 @@ enum FunctionType {
     METHOD
 }
 
+enum ClassType {
+    NONE,
+    CLASS
+}
+
 export class Resolver implements ExpressionVisitor, StatementVisitor {
     readonly interpreter: Interpreter;
     readonly scopes: Map<string, boolean>[] = [];
     private currentFunction: FunctionType = FunctionType.NONE;
+    private currentClass: ClassType = ClassType.NONE;
 
     constructor(interpreter: Interpreter) {
         this.interpreter = interpreter;
@@ -130,13 +137,23 @@ export class Resolver implements ExpressionVisitor, StatementVisitor {
     }
 
     visitForClassStatement(cs: ClassStatement) {
+        const enclosingClass = this.currentClass;
+        this.currentClass = ClassType.CLASS;
+
         this.declare(cs.name);
         this.define(cs.name);
+
+        this.beginScope();
+        this.scopes[this.scopes.length - 1].set("this", true);
 
         for(const method of cs.methods) {
             let declaration = FunctionType.METHOD;
             this.resolveFunction(method, declaration);
         }
+
+        this.endScope();
+
+        this.currentClass = enclosingClass;
 
         return null;
     }
@@ -154,6 +171,16 @@ export class Resolver implements ExpressionVisitor, StatementVisitor {
     visitForWhileStatement(ws: WhileStatement) {
         this.resolveExpression(ws.condition);
         this.resolveStatement(ws.body);
+        return null;
+    }
+
+    visitForThisExpression(te: ThisExpression) {
+
+        if(this.currentClass === ClassType.NONE) { 
+            throw new Error("Cannot use 'this' outside of a class.");
+        }
+
+        this.resolveLocal(te, te.keyword);
         return null;
     }
 

@@ -6,6 +6,7 @@ import { GroupingExpression } from "./GroupingExpression"
 import { LiteralExpression } from "./LiteralExpression"
 import { LogicalExpression } from "./LogicalExpression"
 import { SetExpression } from "./SetExpression"
+import { ThisExpression } from "./ThisExpression"
 import { UnaryExpression } from "./UnaryExpression"
 import { VariableExpression } from "./VariableExpression"
 
@@ -25,4 +26,5 @@ export interface ExpressionVisitor {
     visitForCallExpression(ce: CallExpression) : any
     visitForGetExpression(ge: GetExpression) : any
     visitForSetExpression(se: SetExpression) : any
+    visitForThisExpression(te: ThisExpression) : any
 }

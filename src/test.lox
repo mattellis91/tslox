@@ -83,3 +83,31 @@ var bacon = Bacon();
 bacon.eat(); // Prints "Crunch crunch crunch!".
 
 Bacon().eat(); // Prints "Crunch crunch crunch!".
+
+class Thing {
+  getCallback() {
+    fun localFunction() {
+      print this;
+    }
+
+    return localFunction;
+  }
+}
+
+var callback = Thing().getCallback();
+callback();
+
+class Cake {
+  taste() {
+    var adjective = "delicious";
+    print "The " + this.flavor + " cake is " + adjective + "!";
+  }
+}
+
+var cake = Cake();
+cake.flavor = "German chocolate";
+cake.taste(); // Prints "The German chocolate cake is delicious!".
+
+// fun notAMethod() {
+//   print this; //should error 'can't use this outside of a class'
+// }
