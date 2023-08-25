@@ -72,3 +72,14 @@ print bagel; // Prints "Bagel instance".
 
 bagel.flavour = "Plain";
 print bagel.flavour;
+
+class Bacon {
+  eat() {
+    print "Crunch crunch crunch!";
+  }
+}
+
+var bacon = Bacon();
+bacon.eat(); // Prints "Crunch crunch crunch!".
+
+Bacon().eat(); // Prints "Crunch crunch crunch!".

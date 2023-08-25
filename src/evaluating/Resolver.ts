@@ -24,7 +24,8 @@ import { Interpreter } from "./Interperter";
 
 enum FunctionType {
     NONE,
-    FUNCTION
+    FUNCTION,
+    METHOD
 }
 
 export class Resolver implements ExpressionVisitor, StatementVisitor {
@@ -131,6 +132,12 @@ export class Resolver implements ExpressionVisitor, StatementVisitor {
     visitForClassStatement(cs: ClassStatement) {
         this.declare(cs.name);
         this.define(cs.name);
+
+        for(const method of cs.methods) {
+            let declaration = FunctionType.METHOD;
+            this.resolveFunction(method, declaration);
+        }
+
         return null;
     }
 

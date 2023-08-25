@@ -196,7 +196,14 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
 
     visitForClassStatement(cs: ClassStatement) {
         this.environment.define(cs.name.lexeme, null);
-        const lClass = new LoxClass(cs.name.lexeme);
+
+        const methods = new Map<string, LoxFunction>();
+        for(const method of cs.methods) {
+            const func = new LoxFunction(method, this.environment);
+            methods.set(method.name.lexeme, func);
+        }
+
+        const lClass = new LoxClass(cs.name.lexeme, methods);
         this.environment.assign(cs.name, lClass);
         return null;
     }
