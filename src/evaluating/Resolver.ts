@@ -26,6 +26,7 @@ import { Interpreter } from "./Interperter";
 enum FunctionType {
     NONE,
     FUNCTION,
+    INITIALIZER,
     METHOD
 }
 
@@ -148,6 +149,11 @@ export class Resolver implements ExpressionVisitor, StatementVisitor {
 
         for(const method of cs.methods) {
             let declaration = FunctionType.METHOD;
+
+            if(method.name.lexeme === "init") {
+                declaration = FunctionType.INITIALIZER;
+            }
+
             this.resolveFunction(method, declaration);
         }
 
@@ -163,6 +169,9 @@ export class Resolver implements ExpressionVisitor, StatementVisitor {
             throw new Error("Cannot return from top-level code.");
         }
         if(ps.value !== null) {
+            if(this.currentFunction === FunctionType.INITIALIZER) {
+                throw new Error("Cannot return a value from an initializer.");
+            }
             this.resolveExpression(ps.value);
         }
         return null;

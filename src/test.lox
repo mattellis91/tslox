@@ -111,3 +111,13 @@ cake.taste(); // Prints "The German chocolate cake is delicious!".
 // fun notAMethod() {
 //   print this; //should error 'can't use this outside of a class'
 // }
+
+class Foo {
+  init() {
+    this.a = "sdf";
+  }
+}
+
+var foo = Foo();
+foo.init();
+print foo.a;

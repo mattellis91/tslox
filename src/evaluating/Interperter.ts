@@ -191,7 +191,7 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
     }
 
     visitForFunctionStatement(fs: FunctionStatement) {
-        const func = new LoxFunction(fs, this.environment);
+        const func = new LoxFunction(fs, this.environment, false);
         this.environment.define(fs.name.lexeme, func);
     }
 
@@ -200,7 +200,7 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
 
         const methods = new Map<string, LoxFunction>();
         for(const method of cs.methods) {
-            const func = new LoxFunction(method, this.environment);
+            const func = new LoxFunction(method, this.environment, method.name.lexeme === 'init');
             methods.set(method.name.lexeme, func);
         }
 

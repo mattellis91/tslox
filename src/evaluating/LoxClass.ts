@@ -14,10 +14,20 @@ export class LoxClass implements Callable{
 
     call(interpreter: any, args: any[]): any {
         const instance = new LoxInstance(this);
+
+        const initializer = this.findMethod("init");
+        if(initializer !== undefined) {
+            initializer.bind(instance).call(interpreter, args);
+        }
+
         return instance;
     }
 
     arity(): number {
+        const initializer = this.findMethod("init");
+        if(initializer !== undefined) {
+            return initializer.arity();
+        }
         return 0;
     }
 

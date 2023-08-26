@@ -8,9 +8,12 @@ import { Return } from "./Return";
 export class LoxFunction implements Callable {
     readonly declaration: FunctionStatement;
     readonly closure: Environment;
-    constructor(declaration: FunctionStatement, closure: Environment) {
+    readonly isInitializer: boolean
+
+    constructor(declaration: FunctionStatement, closure: Environment, isInitializer:boolean) {
         this.declaration = declaration;
         this.closure = closure;
+        this.isInitializer = isInitializer;
     }
 
     call(interpreter: any, args: any[]) {
@@ -22,10 +25,20 @@ export class LoxFunction implements Callable {
         try {
             interpreter.executeBlock(this.declaration.body, environment);
         } catch (returnValue: unknown) {
+            
+            if(this.isInitializer) {
+                return this.closure.getAt(0, "this");
+            }
+
             if(returnValue instanceof Return) {
                 return (returnValue as Return).value;
             }
+
             return returnValue;
+        }
+
+        if(this.isInitializer) {
+            return this.closure.getAt(0, "this");
         }
 
         return null;
@@ -38,6 +51,6 @@ export class LoxFunction implements Callable {
     bind(instance: LoxInstance) {
         const environment = new Environment(this.closure);
         environment.define("this", instance);
-        return new LoxFunction(this.declaration, environment);
+        return new LoxFunction(this.declaration, environment, this.isInitializer);
     }
 }
