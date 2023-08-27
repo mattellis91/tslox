@@ -6,10 +6,12 @@ import { LoxInstance } from "./LoxInstance";
 export class LoxClass implements Callable{
     readonly name: string;
     readonly methods: Map<string, LoxFunction> = new Map<string, LoxFunction>();
+    readonly superclass: LoxClass | null = null;
     
-    constructor(name: string, methods: Map<string, LoxFunction>) {
+    constructor(name: string, superclass: LoxClass | null, methods: Map<string, LoxFunction>) {
         this.name = name;
         this.methods = methods;
+        this.superclass = superclass;
     }
 
     call(interpreter: any, args: any[]): any {
@@ -39,6 +41,11 @@ export class LoxClass implements Callable{
         if(this.methods.has(name)) {
             return this.methods.get(name);
         }
+
+        if(this.superclass !== null) {
+            return this.superclass.findMethod(name);
+        } 
+
         return undefined;
     }
 }

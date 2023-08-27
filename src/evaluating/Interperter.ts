@@ -196,6 +196,15 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
     }
 
     visitForClassStatement(cs: ClassStatement) {
+
+        let superclass = null;
+        if(cs.superclass !== null) {
+            superclass = this.evaluate(cs.superclass);
+            if(!(superclass instanceof LoxClass)) {
+                throw new RuntimeError(cs.superclass.name, "Superclass must be a class.");
+            }
+        }
+
         this.environment.define(cs.name.lexeme, null);
 
         const methods = new Map<string, LoxFunction>();
@@ -204,7 +213,7 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
             methods.set(method.name.lexeme, func);
         }
 
-        const lClass = new LoxClass(cs.name.lexeme, methods);
+        const lClass = new LoxClass(cs.name.lexeme, superclass, methods);
         this.environment.assign(cs.name, lClass);
         return null;
     }

@@ -144,6 +144,14 @@ export class Resolver implements ExpressionVisitor, StatementVisitor {
         this.declare(cs.name);
         this.define(cs.name);
 
+        if(cs.superclass !== null && cs.name.lexeme === cs.superclass.name.lexeme) {
+            throw new Error("A class cannot inherit from itself.");
+        }
+        
+        if(cs.superclass !== null) {
+            this.resolveExpression(cs.superclass);
+        }
+
         this.beginScope();
         this.scopes[this.scopes.length - 1].set("this", true);
 

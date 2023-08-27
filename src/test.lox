@@ -121,3 +121,13 @@ class Foo {
 var foo = Foo();
 foo.init();
 print foo.a;
+
+class Doughnut {
+  cook() {
+    print "Fry until golden brown.";
+  }
+}
+
+class BostonCream < Doughnut {}
+
+BostonCream().cook();
