@@ -24,6 +24,7 @@ import { ClassStatement } from "./ClassStatement";
 import { GetExpression } from "./GetExpression";
 import { SetExpression } from "./SetExpression";
 import { ThisExpression } from "./ThisExpression";
+import { SuperExpression } from "./SuperExpression";
 
 export class Parser {
     private readonly tokens:Token[];
@@ -397,6 +398,13 @@ export class Parser {
 
         if(this.match([TokenType.NUMBER, TokenType.STRING])) {
             return new LiteralExpression(this.previous().literal);
+        }
+
+        if(this.match([TokenType.SUPER])) {
+            const keyword = this.previous();
+            this.consume(TokenType.DOT, "Expect '.' after 'super'.");
+            const method = this.consume(TokenType.IDENTIFIER, "Expect superclass method name.");
+            return new SuperExpression(keyword, method);
         }
 
         if(this.match([TokenType.THIS])) return new ThisExpression(this.previous());

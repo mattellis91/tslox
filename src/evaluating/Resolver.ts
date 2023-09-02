@@ -16,6 +16,7 @@ import { PrintStatement } from "../parsing/PrintStatement";
 import { ReturnStatement } from "../parsing/ReturnStatement";
 import { SetExpression } from "../parsing/SetExpression";
 import { Statement, StatementVisitor } from "../parsing/Statement";
+import { SuperExpression } from "../parsing/SuperExpression";
 import { ThisExpression } from "../parsing/ThisExpression";
 import { UnaryExpression } from "../parsing/UnaryExpression";
 import { VariableExpression } from "../parsing/VariableExpression";
@@ -32,7 +33,8 @@ enum FunctionType {
 
 enum ClassType {
     NONE,
-    CLASS
+    CLASS,
+    SUBCLASS
 }
 
 export class Resolver implements ExpressionVisitor, StatementVisitor {
@@ -149,7 +151,13 @@ export class Resolver implements ExpressionVisitor, StatementVisitor {
         }
         
         if(cs.superclass !== null) {
+            this.currentClass = ClassType.SUBCLASS;
             this.resolveExpression(cs.superclass);
+        }
+
+        if(cs.superclass !== null) {
+            this.beginScope();
+            this.scopes[this.scopes.length - 1].set("super", true);
         }
 
         this.beginScope();
@@ -166,6 +174,8 @@ export class Resolver implements ExpressionVisitor, StatementVisitor {
         }
 
         this.endScope();
+
+        if(cs.superclass !== null) this.endScope()
 
         this.currentClass = enclosingClass;
 
@@ -188,6 +198,16 @@ export class Resolver implements ExpressionVisitor, StatementVisitor {
     visitForWhileStatement(ws: WhileStatement) {
         this.resolveExpression(ws.condition);
         this.resolveStatement(ws.body);
+        return null;
+    }
+
+    visitForSuperExpression(se: SuperExpression) {
+        if(this.currentClass === ClassType.NONE) {
+            throw new Error("Cannot use 'super' outside of a class.");
+        } else if(this.currentClass !== ClassType.SUBCLASS) {
+            throw new Error("Cannot use 'super' in a class with no superclass.");
+        }
+        this.resolveLocal(se, se.keyword);
         return null;
     }
 

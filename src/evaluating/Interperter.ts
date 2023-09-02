@@ -18,6 +18,7 @@ import { PrintStatement } from "../parsing/PrintStatement";
 import { ReturnStatement } from "../parsing/ReturnStatement";
 import { SetExpression } from "../parsing/SetExpression";
 import { Statement, StatementVisitor } from "../parsing/Statement";
+import { SuperExpression } from "../parsing/SuperExpression";
 import { ThisExpression } from "../parsing/ThisExpression";
 import { UnaryExpression } from "../parsing/UnaryExpression";
 import { VariableExpression } from "../parsing/VariableExpression";
@@ -207,6 +208,11 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
 
         this.environment.define(cs.name.lexeme, null);
 
+        if(cs.superclass !== null) {
+            this.environment = new Environment(this.environment);
+            this.environment.define("super", superclass);
+        }
+
         const methods = new Map<string, LoxFunction>();
         for(const method of cs.methods) {
             const func = new LoxFunction(method, this.environment, method.name.lexeme === 'init');
@@ -214,6 +220,11 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
         }
 
         const lClass = new LoxClass(cs.name.lexeme, superclass, methods);
+
+        if(superclass !== null) {
+            this.environment = this.environment.enclosing!;
+        }
+
         this.environment.assign(cs.name, lClass);
         return null;
     }
@@ -230,6 +241,19 @@ export class Interpreter implements ExpressionVisitor, StatementVisitor {
         }
 
         throw new Return(value);
+    }
+
+    visitForSuperExpression(se: SuperExpression) {
+        const distance = this.locals.get(se)
+        const superclass = this.environment.getAt(distance!, "super") as LoxClass;
+        const object = this.environment.getAt(distance! - 1, "this") as LoxInstance;
+        const method = superclass.findMethod(se.method.lexeme);
+
+        if(method === null) {
+            throw new RuntimeError(se.method, `Undefined property '${se.method.lexeme}'.`);
+        }
+
+        return method!.bind(object);
     }
 
     visitForLogicalExpression(le: LogicalExpression) {

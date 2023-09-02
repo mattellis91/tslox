@@ -104,14 +104,6 @@ class Cake {
   }
 }
 
-var cake = Cake();
-cake.flavor = "German chocolate";
-cake.taste(); // Prints "The German chocolate cake is delicious!".
-
-// fun notAMethod() {
-//   print this; //should error 'can't use this outside of a class'
-// }
-
 class Foo {
   init() {
     this.a = "sdf";
@@ -122,12 +114,30 @@ var foo = Foo();
 foo.init();
 print foo.a;
 
+var cake = Cake();
+cake.flavor = "German chocolate";
+cake.taste(); // Prints "The German chocolate cake is delicious!".
+
+// fun notAMethod() {
+//   print this; //should error 'can't use this outside of a class'
+// }
+
 class Doughnut {
   cook() {
     print "Fry until golden brown.";
   }
 }
 
+class Eclair < Doughnut {
+  cook() {
+    super.cook();
+    print "Pipe full of crème pâtissière.";
+  }
+}
+
 class BostonCream < Doughnut {}
 
 BostonCream().cook();
+
+a = Eclair();
+a.cook();
